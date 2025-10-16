@@ -27,11 +27,18 @@ git push origin v3.9
 # 3. Create release on GitHub from this tag
 ```
 
-### Step 3: Distribute Plugin
+### Step 3: Build Distribution Package
+Create a clean zip for distribution:
+```bash
+./build.sh
+```
+This creates `build/dist/bb-multisite-tools-v{version}.zip` with everything needed.
+
+### Step 4: Distribute Plugin
 When sharing the plugin with other sites:
-- The `plugin-update-checker/` folder will NOT be in your repo (it's gitignored)
-- Users run `./install-update-checker.sh` to install it
-- Or it shows a notice in WP admin with instructions
+- Use the zip from `build/dist/` (includes everything)
+- Or share the repo (users run `./install-update-checker.sh` to get dependencies)
+- Attach the zip to your GitHub release for easy downloading
 
 ## For Plugin Users (Installing on Other Sites)
 

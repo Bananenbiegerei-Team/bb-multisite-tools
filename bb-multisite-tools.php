@@ -16,9 +16,8 @@ require_once 'polyfills.php';
 $puc_file = plugin_dir_path(__FILE__) . 'plugin-update-checker/plugin-update-checker.php';
 if (file_exists($puc_file)) {
 	require_once $puc_file;
-	use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
-	$bbMultisiteToolsUpdateChecker = PucFactory::buildUpdateChecker(
+	$bbMultisiteToolsUpdateChecker = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
 		'https://github.com/your-username/bb-multisite-tools/', // TODO: Replace with your GitHub repo URL
 		__FILE__,
 		'bb-multisite-tools'

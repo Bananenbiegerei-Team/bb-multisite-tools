@@ -2,6 +2,9 @@
 # This will be automatically downloaded when the plugin is used
 plugin-update-checker/
 
+# Build directory
+build/
+
 # macOS files
 .DS_Store
 

@@ -69,6 +69,27 @@ When installing on other WordPress sites:
 
 **Note**: The `plugin-update-checker` folder should NOT be committed to your repository. It will be automatically downloaded when needed.
 
+## Building a Distribution Package
+
+To create a clean distribution zip for deployment:
+
+```bash
+./build.sh
+```
+
+This creates `build/dist/bb-multisite-tools-v{version}.zip` containing:
+- ✓ All necessary plugin files (PHP, JS, CSS, templates)
+- ✓ Plugin Update Checker library (if installed locally)
+- ✓ Documentation and installation script
+- ✗ Excludes: Git files, build scripts, and development files
+
+The generated zip is ready to:
+- Upload to other WordPress installations
+- Attach as a release asset on GitHub
+- Distribute to team members
+
+**Tip**: You can attach this zip to your GitHub release for users who prefer manual installation.
+
 ## How It Works
 
 - WordPress checks for updates once per day (configurable)
