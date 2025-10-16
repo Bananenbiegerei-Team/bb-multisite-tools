@@ -2,7 +2,7 @@
 /*
 Plugin Name: BB Multisite Tools for Wikimedia DE
 Description: Useful tools: user management, DB usage, plugins and themes usage
-Version: 4.2
+Version: 4.2.1
 Author: Bananenbiegerei
 Requires at least: 5.3
 Requires PHP: 5.5
