@@ -6,10 +6,41 @@ Version: 3.8
 Author: Eric Leclercq
 Requires at least: 5.3
 Requires PHP: 5.5
-BB Update Checker: enabled
 */
 
 require_once 'polyfills.php';
+
+// Initialize Plugin Update Checker (GitHub-based updates)
+// This provides automatic updates from GitHub releases without the performance issues
+// of the old BB Update Checker (which checked on every page load)
+$puc_file = plugin_dir_path(__FILE__) . 'plugin-update-checker/plugin-update-checker.php';
+if (file_exists($puc_file)) {
+	require_once $puc_file;
+	use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+	$bbMultisiteToolsUpdateChecker = PucFactory::buildUpdateChecker(
+		'https://github.com/your-username/bb-multisite-tools/', // TODO: Replace with your GitHub repo URL
+		__FILE__,
+		'bb-multisite-tools'
+	);
+
+	// Optional: If using a private repository, uncomment and add your token
+	// $bbMultisiteToolsUpdateChecker->setAuthentication('your-github-token-here');
+
+	// Optional: Use release assets instead of source code
+	// $bbMultisiteToolsUpdateChecker->getVcsApi()->enableReleaseAssets();
+} else {
+	// Show admin notice if Plugin Update Checker is not installed
+	add_action('admin_notices', function() {
+		if (current_user_can('install_plugins')) {
+			$install_script = plugin_dir_path(__FILE__) . 'install-update-checker.sh';
+			$message = '<strong>BB Multisite Tools:</strong> Plugin Update Checker library is missing. ';
+			$message .= 'Automatic updates are disabled. ';
+			$message .= 'Run <code>bash ' . esc_html($install_script) . '</code> or see UPDATE-SYSTEM.md for instructions.';
+			echo '<div class="notice notice-warning"><p>' . $message . '</p></div>';
+		}
+	});
+}
 
 class BBMultisiteTools
 {

@@ -1,0 +1,13 @@
+# Plugin Update Checker library (installed via git clone)
+# This will be automatically downloaded when the plugin is used
+plugin-update-checker/
+
+# macOS files
+.DS_Store
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
