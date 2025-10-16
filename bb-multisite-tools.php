@@ -2,8 +2,8 @@
 /*
 Plugin Name: BB Multisite Tools for Wikimedia DE
 Description: Useful tools: user management, DB usage, plugins and themes usage
-Version: 3.8
-Author: Eric Leclercq
+Version: 1.1
+Author: Bananenbiegerei
 Requires at least: 5.3
 Requires PHP: 5.5
 */
@@ -18,7 +18,7 @@ if (file_exists($puc_file)) {
 	require_once $puc_file;
 
 	$bbMultisiteToolsUpdateChecker = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
-		'https://github.com/your-username/bb-multisite-tools/', // TODO: Replace with your GitHub repo URL
+		'https://github.com/Bananenbiegerei-Team/bb-multisite-tools',
 		__FILE__,
 		'bb-multisite-tools'
 	);

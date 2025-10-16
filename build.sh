@@ -51,8 +51,6 @@ cp -r "$PLUGIN_DIR/templates" "$TEMP_DIR/$PLUGIN_SLUG/"
 
 # Copy documentation files
 cp "$PLUGIN_DIR/README.md" "$TEMP_DIR/$PLUGIN_SLUG/"
-cp "$PLUGIN_DIR/UPDATE-SYSTEM.md" "$TEMP_DIR/$PLUGIN_SLUG/"
-cp "$PLUGIN_DIR/QUICK-START.md" "$TEMP_DIR/$PLUGIN_SLUG/"
 cp "$PLUGIN_DIR/install-update-checker.sh" "$TEMP_DIR/$PLUGIN_SLUG/"
 chmod +x "$TEMP_DIR/$PLUGIN_SLUG/install-update-checker.sh"
 
