@@ -2,7 +2,7 @@
 /*
 Plugin Name: BB Multisite Tools for Wikimedia DE
 Description: Useful tools: user management, DB usage, plugins and themes usage
-Version: 4.2.1
+Version: 4.3.0
 Author: Bananenbiegerei
 Requires at least: 5.3
 Requires PHP: 5.5
@@ -93,11 +93,12 @@ class BBMultisiteTools
       999,
     );
 
-    // Register REST API end-points
+    // Register AJAX end-points
     if (wp_get_environment_type() !== 'production') {
       add_action('wp_ajax_bb_multisite_tools_cleanup_data_mv_users', [$this, 'cleanup_data_mv_users']);
       add_action('wp_ajax_bb_multisite_tools_cleanup_data_tables', [$this, 'cleanup_data_tables']);
     }
+    add_action('wp_ajax_bb_test_pagespeed', [$this, 'ajax_test_pagespeed']);
 
     // Enrich users list with roles per site
     add_action('wpmu_users_columns', function ($column_headers) {
@@ -425,6 +426,37 @@ class BBMultisiteTools
     echo '</div>';
   }
 
+  // PageSpeed Insights page
+  public function pagespeed_page()
+  {
+    $sites = $this->get_sites();
+    $action = $_GET['action'] ?? '';
+    $site_id = intval($_GET['site_id'] ?? 0);
+
+    // Handle AJAX-style requests for testing a single site
+    if ($action === 'test' && $site_id > 0) {
+      $site = $sites[$site_id] ?? null;
+      if ($site) {
+        $results = $this->get_pagespeed_scores($site);
+        include 'templates/pagespeed.php';
+        return;
+      }
+    }
+
+    // Get cached results for all sites
+    $pagespeed_data = [];
+    foreach ($sites as $site) {
+      $cached = get_site_transient('bb_pagespeed_' . $site->blog_id);
+      $pagespeed_data[$site->blog_id] = [
+        'site' => $site,
+        'results' => $cached,
+        'cached_time' => $cached ? get_site_transient('bb_pagespeed_time_' . $site->blog_id) : null
+      ];
+    }
+
+    include 'templates/pagespeed.php';
+  }
+
   //---------------------------------------------------------------------------
   // HELPERS: Menu pages
   public function setup_menu_pages()
@@ -438,6 +470,7 @@ class BBMultisiteTools
       add_submenu_page('bb_multisite_tools', 'Database', 'Database', 'install_plugins', 'bb_multisite_tools_db', [$this, 'db_page']);
       add_submenu_page('bb_multisite_tools', 'WPForms', 'WPForms', 'install_plugins', 'bb_multisite_tools_wpf', [$this, 'wpforms_page']);
       add_submenu_page('bb_multisite_tools', 'Fix Permalinks', 'Fix Permalinks', 'install_plugins', 'bb_multisite_tools_permalinks', [$this, 'permalinks_page']);
+      add_submenu_page('bb_multisite_tools', 'PageSpeed Insights', 'PageSpeed Insights', 'install_plugins', 'bb_multisite_tools_pagespeed', [$this, 'pagespeed_page']);
 
       // Only for non-production servers
       if (wp_get_environment_type() !== 'production') {
@@ -886,6 +919,123 @@ class BBMultisiteTools
     });
   }
 
+  // HELPERS: PageSpeed Insights
+  // Get PageSpeed scores for a site
+  public function get_pagespeed_scores($site)
+  {
+    $url = 'https://' . $site->domain . $site->path;
+
+    // Check cache first (24 hours)
+    $cached = get_site_transient('bb_pagespeed_' . $site->blog_id);
+    if ($cached !== false) {
+      return $cached;
+    }
+
+    $results = [
+      'mobile' => $this->fetch_pagespeed_data($url, 'mobile'),
+      'desktop' => $this->fetch_pagespeed_data($url, 'desktop')
+    ];
+
+    // Cache for 24 hours
+    set_site_transient('bb_pagespeed_' . $site->blog_id, $results, 24 * HOUR_IN_SECONDS);
+    set_site_transient('bb_pagespeed_time_' . $site->blog_id, time(), 24 * HOUR_IN_SECONDS);
+
+    return $results;
+  }
+
+  // Fetch PageSpeed data from Google API
+  private function fetch_pagespeed_data($url, $strategy = 'mobile')
+  {
+    // Google PageSpeed Insights API (free, no API key required for basic usage)
+    // For production use, consider getting an API key: https://developers.google.com/speed/docs/insights/v5/get-started
+    $api_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
+    $api_url = add_query_arg([
+      'url' => urlencode($url),
+      'strategy' => $strategy,
+      'category' => 'performance' // Focus on performance score
+    ], $api_url);
+
+    $response = wp_remote_get($api_url, [
+      'timeout' => 60, // PageSpeed can take a while
+      'sslverify' => true
+    ]);
+
+    if (is_wp_error($response)) {
+      return [
+        'error' => true,
+        'message' => $response->get_error_message()
+      ];
+    }
+
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+
+    if (empty($data['lighthouseResult'])) {
+      return [
+        'error' => true,
+        'message' => 'No data returned from PageSpeed API'
+      ];
+    }
+
+    $lighthouse = $data['lighthouseResult'];
+    $categories = $lighthouse['categories'] ?? [];
+    $audits = $lighthouse['audits'] ?? [];
+
+    return [
+      'error' => false,
+      'score' => isset($categories['performance']['score']) ? round($categories['performance']['score'] * 100) : 0,
+      'metrics' => [
+        'fcp' => $audits['first-contentful-paint']['displayValue'] ?? 'N/A',
+        'lcp' => $audits['largest-contentful-paint']['displayValue'] ?? 'N/A',
+        'tbt' => $audits['total-blocking-time']['displayValue'] ?? 'N/A',
+        'cls' => $audits['cumulative-layout-shift']['displayValue'] ?? 'N/A',
+        'si' => $audits['speed-index']['displayValue'] ?? 'N/A',
+      ],
+      'opportunities' => $this->extract_opportunities($audits),
+      'url' => $url,
+      'fetch_time' => current_time('mysql')
+    ];
+  }
+
+  // Extract top opportunities for improvement
+  private function extract_opportunities($audits)
+  {
+    $opportunities = [];
+    $opportunity_audits = [
+      'render-blocking-resources',
+      'unused-css-rules',
+      'unused-javascript',
+      'modern-image-formats',
+      'offscreen-images',
+      'unminified-css',
+      'unminified-javascript',
+      'efficient-animated-content',
+      'duplicated-javascript',
+      'legacy-javascript',
+      'total-byte-weight'
+    ];
+
+    foreach ($opportunity_audits as $audit_id) {
+      if (isset($audits[$audit_id]) && isset($audits[$audit_id]['details']['overallSavingsMs'])) {
+        $audit = $audits[$audit_id];
+        if ($audit['score'] < 0.9) { // Only show if not passing
+          $opportunities[] = [
+            'title' => $audit['title'],
+            'savings' => $audit['displayValue'] ?? '',
+            'score' => $audit['score']
+          ];
+        }
+      }
+    }
+
+    // Sort by score (worst first)
+    usort($opportunities, function($a, $b) {
+      return $a['score'] <=> $b['score'];
+    });
+
+    return array_slice($opportunities, 0, 5); // Return top 5
+  }
+
   //---------------------------------------------------------------------------
   // HOOKS
   // AJAX End Point: Delete a batch of users
@@ -929,6 +1079,45 @@ class BBMultisiteTools
     }
     echo json_encode($log);
     wp_die();
+  }
+
+  // AJAX End Point: Test PageSpeed for a site
+  public function ajax_test_pagespeed()
+  {
+    // Verify nonce
+    check_ajax_referer('bb_pagespeed_test', 'nonce');
+
+    // Check permissions
+    if (!current_user_can('install_plugins')) {
+      wp_send_json_error('Insufficient permissions');
+      return;
+    }
+
+    $site_id = intval($_POST['site_id'] ?? 0);
+    if ($site_id <= 0) {
+      wp_send_json_error('Invalid site ID');
+      return;
+    }
+
+    $sites = $this->get_sites();
+    $site = $sites[$site_id] ?? null;
+
+    if (!$site) {
+      wp_send_json_error('Site not found');
+      return;
+    }
+
+    // Clear cache first
+    delete_site_transient('bb_pagespeed_' . $site->blog_id);
+    delete_site_transient('bb_pagespeed_time_' . $site->blog_id);
+
+    // Run the test
+    try {
+      $results = $this->get_pagespeed_scores($site);
+      wp_send_json_success($results);
+    } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+    }
   }
   // Handle POST actions and show admin notice
   public function action_handler()
