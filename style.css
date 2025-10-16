@@ -107,6 +107,46 @@
   font-variant-numeric: tabular-nums;
 }
 
+#bb_db_usage th.sortable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 20px;
+}
+
+#bb_db_usage th.sortable:hover {
+  background-color: #f0f0f1;
+}
+
+#bb_db_usage th.sortable .sort-indicator {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.3;
+}
+
+#bb_db_usage th.sortable .sort-indicator::before {
+  content: '\2195';
+  font-size: 14px;
+}
+
+#bb_db_usage th.sortable.sort-asc .sort-indicator {
+  opacity: 1;
+}
+
+#bb_db_usage th.sortable.sort-asc .sort-indicator::before {
+  content: '\2191';
+}
+
+#bb_db_usage th.sortable.sort-desc .sort-indicator {
+  opacity: 1;
+}
+
+#bb_db_usage th.sortable.sort-desc .sort-indicator::before {
+  content: '\2193';
+}
+
 #bb_test_img {
   display: none;
 }

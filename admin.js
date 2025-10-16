@@ -138,3 +138,75 @@ jQuery(document).ready(function () {
 			jQuery(`#wpforms-overview-table input[value="${i}"]`).attr('checked', 'checked');
 		});
 });
+
+// Database table sorting
+jQuery(document).ready(function () {
+	const table = jQuery('#bb_db_usage');
+	if (table.length === 0) return;
+
+	const tbody = table.find('tbody');
+	const headers = table.find('th.sortable');
+	let currentSortColumn = null;
+	let currentSortDirection = 'desc';
+
+	// Set initial sort on "Rows" column (descending - showing biggest first)
+	const rowsHeader = headers.filter(function() {
+		return jQuery(this).text().includes('Rows');
+	});
+	if (rowsHeader.length > 0) {
+		currentSortColumn = rowsHeader.index();
+		rowsHeader.addClass('sort-desc');
+		currentSortDirection = 'desc';
+	}
+
+	headers.on('click', function () {
+		const th = jQuery(this);
+		const columnIndex = th.index();
+		const sortType = th.data('sort-type');
+
+		// Determine sort direction
+		if (currentSortColumn === columnIndex) {
+			// Toggle direction
+			currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+		} else {
+			// New column, default to descending for numbers, ascending for strings
+			currentSortDirection = sortType === 'number' ? 'desc' : 'asc';
+		}
+
+		currentSortColumn = columnIndex;
+
+		// Update header classes
+		headers.removeClass('sort-asc sort-desc');
+		th.addClass('sort-' + currentSortDirection);
+
+		// Sort rows
+		const rows = tbody.find('tr').toArray();
+		rows.sort(function (a, b) {
+			const cellA = jQuery(a).find('td').eq(columnIndex);
+			const cellB = jQuery(b).find('td').eq(columnIndex);
+
+			let valA = cellA.data('value');
+			let valB = cellB.data('value');
+
+			// Handle empty values
+			if (valA === undefined || valA === null || valA === '') valA = sortType === 'number' ? 0 : '';
+			if (valB === undefined || valB === null || valB === '') valB = sortType === 'number' ? 0 : '';
+
+			let comparison = 0;
+			if (sortType === 'number') {
+				valA = parseFloat(valA) || 0;
+				valB = parseFloat(valB) || 0;
+				comparison = valA - valB;
+			} else {
+				valA = String(valA).toLowerCase();
+				valB = String(valB).toLowerCase();
+				comparison = valA.localeCompare(valB);
+			}
+
+			return currentSortDirection === 'asc' ? comparison : -comparison;
+		});
+
+		// Re-append rows in sorted order
+		tbody.empty().append(rows);
+	});
+});

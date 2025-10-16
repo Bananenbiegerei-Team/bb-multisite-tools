@@ -17,18 +17,22 @@
 
   <div class="tab-content">
   <?php if ($tab == 'stats'): ?>
-  <table id="bb_db_usage" class="wp-list-table striped widefat">
+  <table id="bb_db_usage" class="wp-list-table striped widefat sortable">
+    <thead>
     <tr>
-    <th>Table</th>
-    <th>Site</th>
-    <th class='number'>Total Size</th>
-    <th class='number'>Rows↓</th>
+    <th class="sortable" data-sort-type="string">Table <span class="sort-indicator"></span></th>
+    <th class="sortable" data-sort-type="string">Site <span class="sort-indicator"></span></th>
+    <th class='number sortable' data-sort-type="number">Total Size (MB) <span class="sort-indicator"></span></th>
+    <th class='number sortable' data-sort-type="number">Rows <span class="sort-indicator"></span></th>
     </tr>
+    </thead>
+    <tbody>
     <?php foreach ($db_stats as $table): ?>
     <tr>
-    <?php echo "<td><tt>{$table->table_name}</tt></td><td>{$table->site}</td><td class='number'>{$table->size}</td><td class='number'>{$table->rows}</td>"; ?>
+    <?php echo "<td data-value='{$table->table_name}'><tt>{$table->table_name}</tt></td><td data-value='{$table->site}'>{$table->site}</td><td class='number' data-value='{$table->total_size}'>{$table->size}</td><td class='number' data-value='{$table->table_rows}'>{$table->rows}</td>"; ?>
     </tr>
     <?php endforeach; ?>
+    </tbody>
   </table>
   <?php elseif ($tab == 'orphans'): ?>
   <p>Found <?php echo count($orphans); ?> tables not used by any site.</p>
