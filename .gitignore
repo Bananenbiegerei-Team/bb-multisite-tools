@@ -1,7 +1,3 @@
-# Plugin Update Checker library (installed via git clone)
-# This will be automatically downloaded when the plugin is used
-plugin-update-checker/
-
 # Build directory
 build/
 
