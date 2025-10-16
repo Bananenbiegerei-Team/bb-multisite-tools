@@ -1,0 +1,275 @@
+/* FIXME: cleanup CSS... */
+
+#bb_redir_test {
+  color: orange;
+  font-weight: bold;
+}
+#bb_redir_fail {
+  display: none;
+  color: red;
+  font-weight: bold;
+}
+#bb_redir_ok {
+  display: none;
+  color: green;
+  font-weight: bold;
+}
+
+#bb_plugins_usage .bullet {
+  display: inline-block;
+  vertical-align: top;
+  box-sizing: border-box;
+  margin: 1px 0 -1px 2px;
+  padding: 0 5px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background-color: green;
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+  z-index: 26;
+}
+
+#bb_plugins_usage .bullet.red {
+  background-color: red;
+}
+
+#bb_plugins_usage .bullet.blue {
+  background-color: rgb(2, 136, 143);
+  cursor: pointer;
+}
+
+#bb_plugins_usage .plugins .desc ul,
+#bb_plugins_usage .wp-list-table td ul {
+  margin: 0;
+  padding: 0;
+}
+
+#bb_plugins_usage .wp-list-table td li {
+  list-style: none;
+  padding: 0;
+  padding-left: 1em;
+  font-size: 85%;
+  margin: 0;
+}
+
+#bb_plugins_usage .wp-list-table td li a {
+  color: black;
+}
+#bb_plugins_usage .wp-list-table td li a:hover {
+  text-decoration: underline;
+}
+
+#bb_plugins_usage .actions li {
+  display: inline;
+}
+
+#bb_themes_usage .disabled {
+  text-decoration: line-through;
+}
+#bb_themes_usage .bullet {
+  display: inline-block;
+  vertical-align: top;
+  box-sizing: border-box;
+  margin: 1px 0 -1px 2px;
+  padding: 0 5px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background-color: #d63638;
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+  z-index: 26;
+}
+
+#bb_themes_usage.plugins .desc ul,
+#bb_themes_usage.wp-list-table td ul {
+  margin: 0;
+  padding: 0;
+}
+
+#bb_themes_usage.wp-list-table td li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#bb_db_usage th {
+  font-weight: bold;
+}
+
+#bb_db_usage .number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#bb_test_img {
+  display: none;
+}
+
+table.site_roles_list {
+  width: 100%;
+  border-spacing: 0;
+}
+
+table.site_roles_list tr:hover {
+  background-color: var(--ac-border-grey);
+}
+
+table.site_roles_list td {
+  padding: 0;
+}
+table.site_roles_list td:last-child {
+  text-align: right;
+}
+
+.bbacf_site {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.bbacf_blocks table {
+  border-spacing: 0;
+}
+
+.bbacf_blocks table {
+  width: 100%;
+  border-spacing: 0 10px;
+}
+
+.bbacf_blocks table tr:nth-child(odd) {
+}
+
+.bbacf_block {
+  background-color: antiquewhite;
+  white-space: nowrap;
+  border-radius: 20px 0 0 20px;
+  border: solid 2px antiquewhite;
+  vertical-align: middle;
+  width: 16em;
+}
+
+.bbacf_block span {
+  font-size: 75%;
+}
+
+.bbacf_posts {
+  background-color: antiquewhite;
+  border: solid 2px antiquewhite;
+  border-radius: 0 20px 20px 0;
+}
+
+.bbacf_post {
+  display: inline-block;
+  vertical-align: top;
+  box-sizing: border-box;
+  margin: 1px 0 -1px 2px;
+  padding: 0 5px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background-color: white;
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+  z-index: 26;
+}
+
+.bbacf_post.missing {
+  background-color: red;
+}
+
+.bbacf_post:hover {
+  background-color: orange;
+}
+
+.bbacf_post a {
+  color: black;
+}
+
+/* Users Overview */
+table.bb-users {
+  border-collapse: collapse;
+}
+
+table.bb-users tr {
+  border-bottom: solid thin rgb(195, 196, 199);
+}
+
+.role_bullet {
+  display: inline-block;
+  box-sizing: border-box;
+  margin: 1px 0 -1px 2px;
+  padding: 0 5px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background-color: red;
+  color: white;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+  z-index: 26;
+  vertical-align: text-bottom;
+}
+
+.role_bullet.um_active-member,
+.role_bullet.um_passive-member,
+.role_bullet.um_passive-member-X-um_active-member {
+  background-color: #8802a7;
+}
+
+.role_bullet.subscriber {
+  background-color: #a2845e;
+}
+.role_bullet.contributor {
+  background-color: #0099ad;
+}
+.role_bullet.author {
+  background-color: #346fa1;
+}
+.role_bullet.editor {
+  background-color: #5856d6;
+}
+
+.role_bullet.administrator {
+  background-color: #ee8408;
+}
+
+.role_bullet.none,
+.role_bullet.inactive-user,
+.role_bullet.none-X-inactive-user {
+  background-color: grey;
+}
+
+.legend .role_bullet {
+  cursor: pointer;
+  opacity: 0.5;
+}
+.legend .role_bullet.role_bullet_active {
+  opacity: 1;
+}
+
+/* Cleanup User Admin interface */
+.wp-admin .yoast.yoast-settings,
+.wp-admin .user-admin-color-wrap,
+.user-rich-editing-wrap,
+.user-syntax-highlighting-wrap,
+.user-comment-shortcuts-wrap .user-url-wrap,
+.user-facebook-wrap,
+.user-instagram-wrap,
+.user-linkedin-wrap,
+.user-myspace-wrap,
+.user-pinterest-wrap,
+.user-soundcloud-wrap,
+.user-tumblr-wrap,
+.user-twitter-wrap,
+.user-youtube-wrap,
+.user-wikipedia-wrap {
+  display: none;
+}
